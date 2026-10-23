@@ -59,6 +59,7 @@ export const EMOJIS = {
   PING: '🏓',
   VOICE: '🔊',
   GIVEAWAY: '🎉',
+  SHIELD: '🛡️',
   SETTINGS: '⚙️',
   SEARCH: '🔍',
   ARROW_RIGHT: '▶️',
@@ -67,6 +68,7 @@ export const EMOJIS = {
   CROSS: '✖️',
   GAME: '🎮',
   UTILITY: '🔧',
+  ROLE: '🎭',
 } as const;
 
 export const PERMISSION_LEVELS = {
@@ -124,6 +126,45 @@ export const CUSTOM_ID_PREFIXES = {
   GAME_ACTION: 'game_action_',
   VOICEMASTER: 'voicemaster_',
   VM_ACTION: 'vm_',
+  AUTOMOD: 'automod_',
+} as const;
+
+export const AUTOMOD_ACTION_TYPES = {
+  BLOCK_MESSAGE: 'BLOCK_MESSAGE',
+  TIMEOUT: 'TIMEOUT',
+  ALERT: 'ALERT',
+  DELETE: 'DELETE',
+} as const;
+
+export const AUTOMOD_TRIGGER_TYPES = {
+  KEYWORD: 'KEYWORD',
+  REGEX: 'REGEX',
+  SPAM: 'SPAM',
+  MENTION_SPAM: 'MENTION_SPAM',
+  LINK: 'LINK',
+  INVITE: 'INVITE',
+  ATTACHMENT: 'ATTACHMENT',
+  EMOJI: 'EMOJI',
+  CAPS: 'CAPS',
+  NEWLINES: 'NEWLINES',
+  ZALGO: 'ZALGO',
+} as const;
+
+export const ANTINUKE_ACTION_TYPES = {
+  CHANNEL_DELETE: 'CHANNEL_DELETE',
+  CHANNEL_CREATE: 'CHANNEL_CREATE',
+  CHANNEL_UPDATE: 'CHANNEL_UPDATE',
+  ROLE_DELETE: 'ROLE_DELETE',
+  ROLE_CREATE: 'ROLE_CREATE',
+  ROLE_UPDATE: 'ROLE_UPDATE',
+  BAN_ADD: 'BAN_ADD',
+  BAN_REMOVE: 'BAN_REMOVE',
+  KICK: 'KICK',
+  BOT_ADD: 'BOT_ADD',
+  WEBHOOK_CREATE: 'WEBHOOK_CREATE',
+  EMOJI_DELETE: 'EMOJI_DELETE',
+  EMOJI_CREATE: 'EMOJI_CREATE',
+  EMOJI_UPDATE: 'EMOJI_UPDATE',
 } as const;
 
 export const VM_ACTIONS = {

@@ -1,4 +1,5 @@
 import { prisma } from '../database/client.js';
+import { Prisma } from '@prisma/client';
 import { GuildConfigData, PermissionRoleData, TicketConfigData, WelcomeConfigData, ModConfigData, GameConfigData } from '../types/index.js';
 
 export async function getOrCreateGuildConfig(guildId: string) {
@@ -394,4 +395,172 @@ export async function updateStarboardEntry(messageId: string, data: { starCount?
 
 export async function deleteStarboardEntry(messageId: string) {
   return prisma.starboardEntry.delete({ where: { messageId } });
+}
+
+export async function getAutomodConfig(guildId: string) {
+  return prisma.automodConfig.findUnique({
+    where: { guildId },
+    include: { rules: true },
+  });
+}
+
+export async function createAutomodConfig(guildId: string, data: { enabled: boolean; logChannelId?: string; dmOnAction?: boolean }) {
+  return prisma.automodConfig.create({
+    data: { guildId, ...data },
+  });
+}
+
+export async function updateAutomodConfig(guildId: string, data: { enabled?: boolean; logChannelId?: string; dmOnAction?: boolean }) {
+  return prisma.automodConfig.upsert({
+    where: { guildId },
+    update: data,
+    create: { guildId, enabled: true, ...data },
+  });
+}
+
+export async function createAutomodRule(configId: string, data: { name: string; type: string; triggers: string[]; action: string; timeoutDuration?: number; exemptRoles?: string[]; exemptChannels?: string[]; ignoreBots?: boolean; ignoreWebhooks?: boolean }) {
+  return prisma.automodRule.create({
+    data: { configId, ...data },
+  });
+}
+
+export async function getAutomodRules(configId: string) {
+  return prisma.automodRule.findMany({ where: { configId }, orderBy: { createdAt: 'desc' } });
+}
+
+export async function getAutomodRuleById(ruleId: string) {
+  return prisma.automodRule.findUnique({ where: { id: ruleId } });
+}
+
+export async function updateAutomodRule(ruleId: string, data: { name?: string; enabled?: boolean; triggers?: string[]; action?: string; timeoutDuration?: number; exemptRoles?: string[]; exemptChannels?: string[]; ignoreBots?: boolean; ignoreWebhooks?: boolean }) {
+  return prisma.automodRule.update({ where: { id: ruleId }, data });
+}
+
+export async function deleteAutomodRule(ruleId: string) {
+  return prisma.automodRule.delete({ where: { id: ruleId } });
+}
+
+export async function getAntinukeConfig(guildId: string) {
+  return prisma.antinukeConfig.findUnique({
+    where: { guildId },
+    include: { whitelist: true },
+  });
+}
+
+export async function createAntinukeConfig(guildId: string, data: { enabled: boolean; logChannelId?: string; punishment?: string }) {
+  return prisma.antinukeConfig.create({
+    data: { guildId, ...data },
+  });
+}
+
+export async function updateAntinukeConfig(guildId: string, data: { enabled?: boolean; logChannelId?: string; punishment?: string; timeout?: number; channelDelete?: number; channelCreate?: number; channelUpdate?: number; roleDelete?: number; roleCreate?: number; roleUpdate?: number; banAdd?: number; banRemove?: number; kick?: number; botAdd?: number; webhookCreate?: number; emojiDelete?: number; emojiCreate?: number; emojiUpdate?: number }) {
+  return prisma.antinukeConfig.upsert({
+    where: { guildId },
+    update: data,
+    create: { guildId, enabled: true, ...data },
+  });
+}
+
+export async function addToWhitelist(configId: string, targetId: string, type: string) {
+  return prisma.antinukeWhitelist.upsert({
+    where: { configId_targetId_type: { configId, targetId, type } },
+    update: {},
+    create: { configId, targetId, type },
+  });
+}
+
+export async function removeFromWhitelist(configId: string, targetId: string, type: string) {
+  if (type === 'ALL') {
+    return prisma.antinukeWhitelist.deleteMany({ where: { configId, targetId } });
+  }
+  return prisma.antinukeWhitelist.delete({ where: { configId_targetId_type: { configId, targetId, type } } });
+}
+
+export async function getWhitelist(configId: string) {
+  const entries = await prisma.antinukeWhitelist.findMany({ where: { configId } });
+  const grouped: Record<string, { id: string; type: string }[]> = {};
+  for (const entry of entries) {
+    if (!grouped[entry.type]) grouped[entry.type] = [];
+    grouped[entry.type].push({ id: entry.targetId, type: entry.type });
+  }
+  return grouped;
+}
+
+export async function createAntinukeLog(data: { configId: string; actionType: string; executorId: string; targetId: string; punished?: boolean }) {
+  return prisma.antinukeLog.create({ data });
+}
+
+export async function getAntinukeLogs(configId: string, limit: number = 10) {
+  return prisma.antinukeLog.findMany({
+    where: { configId },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  });
+}
+
+export async function getReactionRoleConfig(guildId: string) {
+  return prisma.reactionRoleConfig.findUnique({
+    where: { guildId },
+    include: { messages: { include: { roles: true } } },
+  });
+}
+
+export async function createReactionRoleConfig(guildId: string, data: { enabled: boolean }) {
+  return prisma.reactionRoleConfig.create({
+    data: { guildId, ...data },
+  });
+}
+
+export async function updateReactionRoleConfig(guildId: string, data: { enabled?: boolean }) {
+  return prisma.reactionRoleConfig.upsert({
+    where: { guildId },
+    update: data,
+    create: { guildId, enabled: true, ...data },
+  });
+}
+
+export async function createReactionRoleMessage(configId: string, data: { messageId: string; channelId: string; type: string; mode: string; title: string; description: string }) {
+  return prisma.reactionRoleMessage.create({
+    data: { configId, ...data },
+  });
+}
+
+export async function getReactionRoleMessages(configId: string) {
+  const orderBy: any = { createdAt: 'desc' };
+  return prisma.reactionRoleMessage.findMany({
+    where: { configId },
+    include: { roles: true },
+    orderBy,
+  });
+}
+
+export async function getReactionRoleMessage(messageId: string) {
+  return prisma.reactionRoleMessage.findUnique({
+    where: { messageId },
+    include: { roles: true },
+  });
+}
+
+export async function getReactionRolesForMessage(messageId: string) {
+  return prisma.reactionRole.findMany({ where: { messageId } });
+}
+
+export async function getReactionRoleByRoleId(messageId: string, roleId: string) {
+  return prisma.reactionRole.findFirst({ where: { messageId, roleId } });
+}
+
+export async function addReactionRole(messageId: string, data: { roleId: string; label: string; emoji?: string; description?: string }) {
+  return prisma.reactionRole.create({ data: { messageId, ...data } });
+}
+
+export async function removeReactionRole(messageId: string, roleId: string) {
+  return prisma.reactionRole.delete({ where: { messageId_roleId: { messageId, roleId } } });
+}
+
+export async function updateReactionRole(messageId: string, roleId: string, data: { label?: string; emoji?: string; description?: string }) {
+  return prisma.reactionRole.update({ where: { messageId_roleId: { messageId, roleId } }, data });
+}
+
+export async function deleteReactionRoleMessage(messageId: string) {
+  return prisma.reactionRoleMessage.delete({ where: { messageId } });
 }

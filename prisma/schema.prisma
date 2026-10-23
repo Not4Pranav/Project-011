@@ -29,6 +29,9 @@ model GuildConfig {
   gameConfig      GameConfig?
   voicemasterConfig VoicemasterConfig?
   starboardConfig StarboardConfig?
+  automodConfig   AutomodConfig?
+  antinukeConfig  AntinukeConfig?
+  reactionRoleConfig ReactionRoleConfig?
   permissions     PermissionRole[]
   snipedMessages  SnipedMessage[]
   quotes          Quote[]
@@ -338,5 +341,102 @@ model StarboardEntry {
   starMessageId String?
   createdAt DateTime @default(now())
   config    StarboardConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
+
+
+model AutomodConfig {
+  id            String   @id @default(cuid())
+  guildId       String   @unique
+  enabled       Boolean  @default(false)
+  logChannelId  String?
+  dmOnAction    Boolean  @default(true)
+  guildConfig   GuildConfig @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+  rules         AutomodRule[]
+}
+
+model AutomodRule {
+  id              String   @id @default(cuid())
+  configId        String
+  name            String
+  type            String
+  triggers        String[]
+  action          String
+  timeoutDuration Int?
+  exemptRoles     String[] @default([])
+  exemptChannels  String[] @default([])
+  ignoreBots      Boolean  @default(true)
+  ignoreWebhooks  Boolean  @default(true)
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  config          AutomodConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
+
+
+model AntinukeConfig {
+  id            String   @id @default(cuid())
+  guildId       String   @unique
+  enabled       Boolean  @default(false)
+  logChannelId  String?
+  punishment    String   @default("BAN")
+  timeout       Int      @default(10)
+  guildConfig   GuildConfig @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+  logs          AntinukeLog[]
+  whitelist     AntinukeWhitelist[]
+}
+
+model AntinukeLog {
+  id           String   @id @default(cuid())
+  configId     String
+  actionType   String
+  executorId   String
+  targetId     String
+  punished     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  config       AntinukeConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
+
+model AntinukeWhitelist {
+  id        String   @id @default(cuid())
+  configId  String
+  targetId  String
+  type      String
+  createdAt DateTime @default(now())
+  config    AntinukeConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  @@unique([configId, targetId, type])
+}
+
+
+model ReactionRoleConfig {
+  id            String   @id @default(cuid())
+  guildId       String   @unique
+  enabled       Boolean  @default(false)
+  guildConfig   GuildConfig @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+  messages      ReactionRoleMessage[]
+}
+
+model ReactionRoleMessage {
+  id          String   @id @default(cuid())
+  configId    String
+  messageId   String   @unique
+  channelId   String
+  type        String
+  mode        String
+  title       String
+  description String
+  config      ReactionRoleConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  roles       ReactionRole[]
+}
+
+model ReactionRole {
+  id          String   @id @default(cuid())
+  messageId   String
+  roleId      String
+  label       String
+  emoji       String?
+  description String?
+  createdAt   DateTime @default(now())
+  message     ReactionRoleMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  @@unique([messageId, roleId])
 }
 
