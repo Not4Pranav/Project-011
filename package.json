@@ -1,0 +1,53 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "description": "Production-ready Discord bot with setup wizard",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.9.1",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.2.5",
+    "prisma": "^5.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://x-access-token:kcp1.c2J4LTg3OTMxOGM3ZGQ2OGY2YTM5Y2ZkZTc1MjZmN2FjYzk3ODc0MDAxYjIxMzkzYmE5Yg.github.eb249c92302a8fea8cb759d0c09095698b4b78f0dce99678beda449af0d1f008@github.com/Not4Pranav/Project-011.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Not4Pranav/Project-011/issues"
+  },
+  "homepage": "https://github.com/Not4Pranav/Project-011#readme"
+}
