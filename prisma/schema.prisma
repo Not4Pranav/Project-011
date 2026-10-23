@@ -27,6 +27,8 @@ model GuildConfig {
   welcomeConfig   WelcomeConfig?
   modConfig       ModConfig?
   gameConfig      GameConfig?
+  voicemasterConfig VoicemasterConfig?
+  starboardConfig StarboardConfig?
   permissions     PermissionRole[]
   snipedMessages  SnipedMessage[]
   quotes          Quote[]
@@ -197,6 +199,7 @@ model GameConfig {
   guildConfig   GuildConfig @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
   users         GameUser[]
   leaderboards  Leaderboard[]
+  giveaways     Giveaway[]
 }
 
 model GameUser {
@@ -268,8 +271,72 @@ model Appeal {
   @@unique([configId, caseId, userId])
 }
 
+model VoicemasterConfig {
+  id            String   @id @default(cuid())
+  guildId       String   @unique
+  enabled       Boolean  @default(false)
+  categoryId    String?
+  createChannelId String?
+  ownerId       String?
+  maxChannels   Int      @default(0)
+  defaultLimit  Int      @default(0)
+  defaultName   String?  @default("{user}'s channel")
+  bitrate       Int      @default(64)
+  guildConfig   GuildConfig @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+  tempChannels  TempVoiceChannel[]
+}
+
+model TempVoiceChannel {
+  id        String   @id @default(cuid())
+  configId  String
+  channelId String   @unique
+  ownerId   String
+  name      String?
+  createdAt DateTime @default(now())
+  config    VoicemasterConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
+
 enum AppealStatus {
   PENDING
   APPROVED
   DENIED
 }
+
+model Giveaway {
+  id           String   @id @default(cuid())
+  configId     String
+  messageId    String   @unique
+  channelId    String
+  prize        String
+  winners      Int      @default(1)
+  endsAt       DateTime
+  description  String?
+  participants String[] @default([])
+  ended        Boolean  @default(false)
+  winnerIds    String?
+  createdAt    DateTime @default(now())
+  config       GameConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
+model StarboardConfig {
+  id        String   @id @default(cuid())
+  guildId   String   @unique
+  enabled   Boolean  @default(false)
+  channelId String?
+  threshold Int      @default(5)
+  emoji     String   @default("⭐")
+  selfStar  Boolean  @default(false)
+  guildConfig GuildConfig @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+  entries   StarboardEntry[]
+}
+
+model StarboardEntry {
+  id        String   @id @default(cuid())
+  configId  String
+  messageId String   @unique
+  channelId String
+  starCount Int      @default(0)
+  starMessageId String?
+  createdAt DateTime @default(now())
+  config    StarboardConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
+

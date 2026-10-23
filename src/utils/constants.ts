@@ -8,6 +8,7 @@ export const COLORS = {
   TICKET: 0x9B59B6,
   WELCOME: 0x2ECC71,
   GAME: 0xE74C3C,
+  VOICE: 0x7289DA,
   UTILITY: 0x95A5A6,
   DEFAULT: 0x2F3136,
 } as const;
@@ -56,6 +57,8 @@ export const EMOJIS = {
   SERVER: '🏠',
   USER: '👤',
   PING: '🏓',
+  VOICE: '🔊',
+  GIVEAWAY: '🎉',
   SETTINGS: '⚙️',
   SEARCH: '🔍',
   ARROW_RIGHT: '▶️',
@@ -119,6 +122,20 @@ export const CUSTOM_ID_PREFIXES = {
   WELCOME_CONFIG: 'welcome_config_',
   MOD_ACTION: 'mod_action_',
   GAME_ACTION: 'game_action_',
+  VOICEMASTER: 'voicemaster_',
+  VM_ACTION: 'vm_',
+} as const;
+
+export const VM_ACTIONS = {
+  LOCK: 'vm_lock',
+  UNLOCK: 'vm_unlock',
+  GHOST: 'vm_ghost',
+  REVEAL: 'vm_reveal',
+  CLAIM: 'vm_claim',
+  RENAME: 'vm_rename',
+  LIMIT: 'vm_limit',
+  TRANSFER: 'vm_transfer',
+  DELETE: 'vm_delete',
 } as const;
 
 export const LIMITS = {

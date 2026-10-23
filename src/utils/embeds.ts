@@ -102,6 +102,14 @@ export function gameEmbed(description: string, title?: string): EmbedBuilder {
   });
 }
 
+export function voiceEmbed(description: string, title?: string): EmbedBuilder {
+  return createEmbed({
+    title: title ?? `${EMOJIS.VOICE} Voice`,
+    description,
+    color: COLORS.VOICE,
+  });
+}
+
 export function utilityEmbed(description: string, title?: string): EmbedBuilder {
   return createEmbed({
     title: title ?? `${EMOJIS.UTILITY} Utility`,

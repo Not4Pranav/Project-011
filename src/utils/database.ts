@@ -299,3 +299,99 @@ export async function getAppealById(configId: string, appealId: string) {
 export async function updateAppeal(appealId: string, data: { status: 'PENDING' | 'APPROVED' | 'DENIED'; reviewedBy: string; reviewedAt: Date }) {
   return prisma.appeal.update({ where: { id: appealId }, data });
 }
+
+export async function getVoicemasterConfig(guildId: string) {
+  return prisma.voicemasterConfig.findUnique({
+    where: { guildId },
+    include: { tempChannels: true },
+  });
+}
+
+export async function createVoicemasterConfig(guildId: string, data: { enabled: boolean; categoryId?: string; createChannelId?: string }) {
+  return prisma.voicemasterConfig.create({
+    data: { guildId, ...data },
+  });
+}
+
+export async function updateVoicemasterConfig(guildId: string, data: { enabled?: boolean; categoryId?: string; createChannelId?: string; ownerId?: string; maxChannels?: number; defaultLimit?: number; defaultName?: string; bitrate?: number }) {
+  return prisma.voicemasterConfig.upsert({
+    where: { guildId },
+    update: data,
+    create: { guildId, enabled: true, ...data },
+  });
+}
+
+export async function createTempChannel(configId: string, channelId: string, ownerId: string, name?: string) {
+  return prisma.tempVoiceChannel.create({
+    data: { configId, channelId, ownerId, name },
+  });
+}
+
+export async function getTempChannel(channelId: string) {
+  return prisma.tempVoiceChannel.findUnique({ where: { channelId } });
+}
+
+export async function deleteTempChannel(channelId: string) {
+  return prisma.tempVoiceChannel.delete({ where: { channelId } });
+}
+
+export async function updateTempChannel(channelId: string, data: { ownerId?: string; name?: string }) {
+  return prisma.tempVoiceChannel.update({ where: { channelId }, data });
+}
+
+export async function getTempChannels(configId: string) {
+  return prisma.tempVoiceChannel.findMany({ where: { configId } });
+}
+
+export async function createGiveaway(data: { configId: string; messageId: string; channelId: string; prize: string; winners: number; endsAt: Date; description?: string }) {
+  return prisma.giveaway.create({ data });
+}
+
+export async function getGiveaways(configId: string) {
+  return prisma.giveaway.findMany({ where: { configId }, orderBy: { createdAt: 'desc' } });
+}
+
+export async function getGiveawayByMessageId(messageId: string) {
+  return prisma.giveaway.findUnique({ where: { messageId } });
+}
+
+export async function updateGiveaway(messageId: string, data: { participants?: string[]; ended?: boolean; winnerIds?: string }) {
+  return prisma.giveaway.update({ where: { messageId }, data });
+}
+
+export async function getStarboardConfig(guildId: string) {
+  return prisma.starboardConfig.findUnique({
+    where: { guildId },
+    include: { entries: true },
+  });
+}
+
+export async function createStarboardConfig(guildId: string, data: { enabled: boolean; channelId?: string; threshold?: number; emoji?: string; selfStar?: boolean }) {
+  return prisma.starboardConfig.create({
+    data: { guildId, ...data },
+  });
+}
+
+export async function updateStarboardConfig(guildId: string, data: { enabled?: boolean; channelId?: string; threshold?: number; emoji?: string; selfStar?: boolean }) {
+  return prisma.starboardConfig.upsert({
+    where: { guildId },
+    update: data,
+    create: { guildId, enabled: true, ...data },
+  });
+}
+
+export async function createStarboardEntry(data: { configId: string; messageId: string; channelId: string; starCount?: number }) {
+  return prisma.starboardEntry.create({ data });
+}
+
+export async function getStarboardEntry(messageId: string) {
+  return prisma.starboardEntry.findUnique({ where: { messageId } });
+}
+
+export async function updateStarboardEntry(messageId: string, data: { starCount?: number; starMessageId?: string }) {
+  return prisma.starboardEntry.update({ where: { messageId }, data });
+}
+
+export async function deleteStarboardEntry(messageId: string) {
+  return prisma.starboardEntry.delete({ where: { messageId } });
+}
